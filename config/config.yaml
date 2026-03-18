@@ -1,0 +1,158 @@
+subinfo_fields:
+  - name: subject_id
+    type: int
+    constraints:
+      min: 101
+      max: 999
+      digits: 3
+
+subinfo_mapping:
+  subject_id: 受试编号（3位数字）
+  Participant Information: 受试信息
+  registration_failed: 登记失败
+  registration_successful: 登记成功
+  invalid_input: "{field} 输入无效"
+
+window:
+  size: [1280, 720]
+  units: pix
+  screen: 0
+  bg_color: black
+  fullscreen: true
+  fullscreen_lock_escape: true
+  monitor_width_cm: 35.5
+  monitor_distance_cm: 60
+
+task:
+  task_name: oddball_mmn_preview
+  save_path: ./outputs/human
+  language: Chinese
+  voice_name: zh-CN-YunyangNeural
+  voice_enabled: true
+  total_blocks: 2
+  total_trials: 120
+  trial_per_block: 60
+  conditions: [standard, deviant, target]
+  key_list: ["space"]
+  delta: 1
+  seed_mode: same_across_sub
+  overall_seed: 2025
+  input_mode: keyboard
+  hide_cursor: true
+  force_quit_enabled: true
+  force_quit_shortcut: ctrl+q
+
+timing:
+  fixation_duration: 0.3
+  stimulus_duration: 0.5
+  iti_duration: 0.5
+
+stimuli:
+  fixation:
+    type: text
+    font: SimHei
+    text: "+"
+    color: white
+    height: 48
+
+  instruction_text:
+    type: text
+    font: SimHei
+    text: |
+      Oddball 任务（MMN/P3）
+
+      屏幕会呈现三类刺激：标准（○）、偏差（□）、目标（★）。
+      仅在目标刺激（★）出现时按空格键。
+      标准和偏差刺激出现时不要按键。
+
+      请尽量保持注视中央并减少眨眼。
+      按空格键开始。
+    color: white
+    height: 28
+    wrapWidth: 980
+
+  standard_stimulus:
+    type: text
+    font: SimHei
+    text: "○"
+    color: white
+    height: 64
+
+  deviant_stimulus:
+    type: text
+    font: SimHei
+    text: "□"
+    color: yellow
+    height: 64
+
+  target_stimulus:
+    type: text
+    font: SimHei
+    text: "★"
+    color: red
+    height: 64
+
+  block_break:
+    type: text
+    font: SimHei
+    text: |
+      第 {block_num}/{total_blocks} 区块结束
+      总体正确率：{overall_accuracy:.1%}
+      目标命中率：{target_hit_rate:.1%}
+      非目标误报率：{false_alarm_rate:.1%}
+
+      按空格键继续。
+    color: white
+    height: 24
+    wrapWidth: 900
+
+  good_bye:
+    type: text
+    font: SimHei
+    text: |
+      任务结束
+      总体正确率：{overall_accuracy:.1%}
+      目标命中率：{target_hit_rate:.1%}
+      非目标误报率：{false_alarm_rate:.1%}
+
+      按空格键退出。
+    color: white
+    height: 28
+    wrapWidth: 900
+
+triggers:
+  map:
+    exp_onset: 1
+    exp_end: 2
+    block_onset: 10
+    block_end: 11
+    fixation_onset: 20
+    standard_stimulus_onset: 40
+    deviant_stimulus_onset: 41
+    target_stimulus_onset: 42
+    standard_key_press: 50
+    deviant_key_press: 51
+    target_key_press: 52
+    standard_no_response: 60
+    deviant_no_response: 61
+    target_no_response: 62
+    iti_onset: 80
+
+  driver:
+    type: serial_url
+    url: loop://
+    baudrate: 115200
+
+  timing:
+    post_delay_ms: 1
+
+  policy:
+    strict: false
+
+condition_generation:
+  weights:
+    standard: 0.7
+    deviant: 0.2
+    target: 0.1
+  order: random
+  first_trial_label: standard

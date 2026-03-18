@@ -1,0 +1,13 @@
+id: H000018
+slug: oddball-mmn
+title: Oddball Task (MMN/P3)
+acquisition: eeg
+variant: html
+cognitive_domain:
+  - attention
+maturity: prototype
+version:
+  release_tag: "0.1.0"
+contracts:
+  psyflow_web_taps: v0.1.0
+maintainer: []
