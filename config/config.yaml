@@ -29,9 +29,9 @@ task:
   language: Chinese
   voice_name: zh-CN-YunyangNeural
   voice_enabled: true
-  total_blocks: 2
-  total_trials: 120
-  trial_per_block: 60
+  total_blocks: 3
+  total_trials: 270
+  trial_per_block: 90
   conditions: [standard, deviant, target]
   key_list: ["space"]
   delta: 1
