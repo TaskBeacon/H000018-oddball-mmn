@@ -28,7 +28,7 @@ task:
   save_path: ./outputs/human
   language: Chinese
   voice_name: zh-CN-YunyangNeural
-  voice_enabled: true
+  voice_enabled: false
   total_blocks: 3
   total_trials: 270
   trial_per_block: 90
@@ -61,7 +61,7 @@ stimuli:
     text: |
       Oddball 任务（MMN/P3）
 
-      屏幕会呈现三类刺激：标准（○）、偏差（□）、目标（★）。
+      屏幕会呈现三类刺激：标准（○）、偏差（△）、目标（★）。
       仅在目标刺激（★）出现时按空格键。
       标准和偏差刺激出现时不要按键。
 
@@ -81,7 +81,7 @@ stimuli:
   deviant_stimulus:
     type: text
     font: SimHei
-    text: "□"
+    text: "△"
     color: yellow
     height: 64
 

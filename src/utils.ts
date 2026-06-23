@@ -1,19 +1,9 @@
-import type { ReducedTrialRow } from "psyflow-web";
+import { PythonRandom, type ReducedTrialRow } from "psyflow-web";
 
 export interface ConditionGenerationSettings {
   weights: number[] | null;
   order: "random" | "sequential";
   first_trial_label: string | null;
-}
-
-function makeSeededRandom(seed: number): () => number {
-  let value = seed >>> 0;
-  return () => {
-    value = (value + 0x6d2b79f5) >>> 0;
-    let t = Math.imul(value ^ (value >>> 15), 1 | value);
-    t ^= t + Math.imul(t ^ (t >>> 7), 61 | t);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
 }
 
 function normalizeOrder(value: unknown): "random" | "sequential" {
@@ -51,18 +41,18 @@ function sampleCounts(
   nTrials: number,
   labels: string[],
   normalizedWeights: number[],
-  rng: () => number
+  rng: PythonRandom
 ): number[] {
   const totalWeight = normalizedWeights.reduce((sum, value) => sum + value, 0);
   const counts = normalizedWeights.map((weight) => Math.floor((nTrials * weight) / totalWeight));
   let remainder = nTrials - counts.reduce((sum, value) => sum + value, 0);
   while (remainder > 0) {
-    const sample = rng() * totalWeight;
+    const sample = rng.random() * totalWeight;
     let cumulative = 0;
     let chosenIndex = labels.length - 1;
     for (let index = 0; index < labels.length; index += 1) {
       cumulative += normalizedWeights[index];
-      if (sample <= cumulative) {
+      if (sample < cumulative) {
         chosenIndex = index;
         break;
       }
@@ -100,7 +90,7 @@ export function generate_oddball_conditions(
     order: "random" as const,
     first_trial_label: null
   };
-  const rng = makeSeededRandom(Math.trunc(seed));
+  const rng = new PythonRandom(Math.trunc(seed));
   const weights = settings.weights ?? new Array(labels.length).fill(1);
   const normalizedWeights = weights.map((value) => {
     const parsed = Number(value);
@@ -114,10 +104,7 @@ export function generate_oddball_conditions(
     }
   });
   if (settings.order === "random") {
-    for (let i = sequence.length - 1; i > 0; i -= 1) {
-      const j = Math.floor(rng() * (i + 1));
-      [sequence[i], sequence[j]] = [sequence[j], sequence[i]];
-    }
+    rng.shuffle(sequence);
   }
   return stabilizeFirstTrialLabel(sequence, settings.first_trial_label);
 }

@@ -46,6 +46,10 @@ export function run_trial(
   const expectedResponseKey = expectedResponseRequired ? keys[0] : null;
   const scoreStep = Number(settings.delta ?? 1);
   const triggerMap = (settings.triggers ?? {}) as Record<string, unknown>;
+  const trigger = (name: string): number | null => {
+    const value = Number(triggerMap[name]);
+    return Number.isFinite(value) ? value : null;
+  };
 
   const fixationDuration = Number(settings.fixation_duration ?? 0.3);
   const stimulusDuration = Number(settings.stimulus_duration ?? 0.5);
@@ -67,7 +71,7 @@ export function run_trial(
     },
     stim_id: "fixation"
   });
-  fixation.show({ duration: fixationDuration }).to_dict();
+  fixation.show({ duration: fixationDuration, onset_trigger: trigger("fixation_onset") }).to_dict();
 
   const stimulus = trial.unit("stimulus").addStim(stimBank.get(`${cond}_stimulus`));
   set_trial_context(stimulus, {
@@ -90,9 +94,10 @@ export function run_trial(
       keys: [...keys],
       correct_keys: expectedResponseRequired && expectedResponseKey ? [expectedResponseKey] : [],
       duration: stimulusDuration,
-      response_trigger: Number(triggerMap[`${cond}_key_press`] ?? 0),
-      timeout_trigger: Number(triggerMap[`${cond}_no_response`] ?? 0),
-      terminate_on_response: false
+      onset_trigger: trigger(`${cond}_stimulus_onset`),
+      response_trigger: trigger(`${cond}_key_press`),
+      timeout_trigger: trigger(`${cond}_no_response`),
+      terminate_on_response: true
     })
     .set_state({
       expected_response: expectedResponseKey,
@@ -125,7 +130,7 @@ export function run_trial(
     },
     stim_id: "fixation"
   });
-  iti.show({ duration: itiDuration }).to_dict();
+  iti.show({ duration: itiDuration, onset_trigger: trigger("iti_onset") }).to_dict();
 
   trial.finalize((snapshot, _runtime, helpers) => {
     helpers.setTrialState("expected_response", expectedResponseKey);
